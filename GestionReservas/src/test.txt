@@ -1,0 +1,834 @@
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public class DetalleReserva {
+    private LocalDate fecha;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
+    private String laboratorioReservado; // Puede ser "Electrónica", "Automatización" o "Robótica"
+    private int numeroOcupantes;
+    private static int reservasElectronica = 0;
+    private static int reservasAutomatizacion = 0;
+    private static int reservasRobotica = 0;
+
+    // Constructor
+    public DetalleReserva(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin,
+                          String laboratorioReservado, int numeroOcupantes) {
+        this.fecha = fecha;
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+        this.laboratorioReservado = laboratorioReservado;
+        this.numeroOcupantes = numeroOcupantes;
+        registrarReserva(laboratorioReservado);
+    }
+
+    // Método para registrar una reserva en el laboratorio correspondiente
+    private void registrarReserva(String laboratorioReservado) {
+        switch (laboratorioReservado.toLowerCase()) {
+            case "electrónica":
+                reservasElectronica++;
+                break;
+            case "automatización":
+                reservasAutomatizacion++;
+                break;
+            case "robótica":
+                reservasRobotica++;
+                break;
+            default:
+                System.out.println("Laboratorio no válido");
+                break;
+        }
+    }
+
+    // Métodos para obtener el número de reservas por laboratorio
+    public static int getReservasElectronica() {
+        return reservasElectronica;
+    }
+
+    public static int getReservasAutomatizacion() {
+        return reservasAutomatizacion;
+    }
+
+    public static int getReservasRobotica() {
+        return reservasRobotica;
+    }
+
+    // Getters para los nuevos campos
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
+
+    public LocalTime getHoraFin() {
+        return horaFin;
+    }
+
+    public String getLaboratorioReservado() {
+        return laboratorioReservado;
+    }
+
+    public int getNumeroOcupantes() {
+        return numeroOcupantes;
+    }
+
+    @Override
+    public String toString() {
+        return "DetalleReserva{" +
+                "fecha=" + fecha +
+                ", horaInicio=" + horaInicio +
+                ", horaFin=" + horaFin +
+                ", laboratorioReservado='" + laboratorioReservado + '\'' +
+                ", numeroOcupantes=" + numeroOcupantes +
+                '}';
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+private static void mostrarPanelEstudiante(JFrame win, Estudiante estudiante) {
+        win.getContentPane().removeAll();
+        JPanel panelEstudiante = new JPanel(new BorderLayout());
+
+        // Panel de Reservas Actuales
+        DefaultTableModel modeloReservas = new DefaultTableModel(
+                new String[]{"Número", "Equipo", "Fecha", "Hora inicio", "Hora fin", "Eliminar"}, 0
+        );
+        JTable tablaReservas = new JTable(modeloReservas);
+
+        // Llenar la tabla con reservas existentes
+        actualizarTablaReservas(modeloReservas, estudiante);
+
+        JScrollPane scrollReservas = new JScrollPane(tablaReservas);
+        panelEstudiante.add(scrollReservas, BorderLayout.NORTH);
+
+        // Panel de Nueva Reserva
+        JPanel nuevaReservaPanel = new JPanel();
+        nuevaReservaPanel.setLayout(new GridLayout(0, 4, 10, 10)); // Agregamos spacing entre componentes
+
+        // Componentes para la selección de equipo y laboratorio
+        JComboBox<String> equipoComboBox = new JComboBox<>(equipos.stream()
+                .filter(equipo -> !equipo.isPrestado())
+                .map(Equipo::getNombre)
+                .toArray(String[]::new));
+
+        JComboBox<String> laboratorioComboBox = new JComboBox<>(new String[]{"Electrónica", "Automatización", "Robótica"});
+
+        // Selector de fecha
+        JDateChooser fechaChooser = new JDateChooser();
+        fechaChooser.setDateFormatString("dd/MM/yyyy");
+        fechaChooser.setMinSelectableDate(new Date()); // No permite fechas pasadas
+
+        // Spinners para hora de inicio y fin
+        SpinnerDateModel modeloHoraInicio = new SpinnerDateModel();
+        SpinnerDateModel modeloHoraFin = new SpinnerDateModel();
+        JSpinner spinnerHoraInicio = new JSpinner(modeloHoraInicio);
+        JSpinner spinnerHoraFin = new JSpinner(modeloHoraFin);
+
+        // Configurar formato de hora para los spinners
+        JSpinner.DateEditor editorInicio = new JSpinner.DateEditor(spinnerHoraInicio, "HH:mm");
+        JSpinner.DateEditor editorFin = new JSpinner.DateEditor(spinnerHoraFin, "HH:mm");
+        spinnerHoraInicio.setEditor(editorInicio);
+        spinnerHoraFin.setEditor(editorFin);
+
+        // Campo para número de ocupantes
+        JTextField ocupantesField = new JTextField();
+
+        // Agregar componentes al panel
+        nuevaReservaPanel.add(new JLabel("Equipo:"));
+        nuevaReservaPanel.add(equipoComboBox);
+        nuevaReservaPanel.add(new JLabel("Laboratorio:"));
+        nuevaReservaPanel.add(laboratorioComboBox);
+        nuevaReservaPanel.add(new JLabel("Fecha:"));
+        nuevaReservaPanel.add(fechaChooser);
+        nuevaReservaPanel.add(new JLabel("Hora inicio:"));
+        nuevaReservaPanel.add(spinnerHoraInicio);
+        nuevaReservaPanel.add(new JLabel("Hora fin:"));
+        nuevaReservaPanel.add(spinnerHoraFin);
+        nuevaReservaPanel.add(new JLabel("Número de Ocupantes:"));
+        nuevaReservaPanel.add(ocupantesField);
+
+        JButton reservarButton = new JButton("Realizar Prestamo");
+        nuevaReservaPanel.add(new JLabel("")); // Espacio vacío
+        nuevaReservaPanel.add(reservarButton);
+
+        panelEstudiante.add(nuevaReservaPanel, BorderLayout.CENTER);
+
+        // Acción del botón de reserva
+        reservarButton.addActionListener(e -> {
+            // Validaciones básicas
+            if (fechaChooser.getDate() == null) {
+                JOptionPane.showMessageDialog(win, "Seleccione una fecha válida");
+                return;
+            }
+
+            // Obtener los valores seleccionados
+            String equipoSeleccionado = (String) equipoComboBox.getSelectedItem();
+            String laboratorioSeleccionado = (String) laboratorioComboBox.getSelectedItem();
+
+            // Convertir Date a LocalDate y LocalTime
+            LocalDate fecha = fechaChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalTime horaInicio = ((Date) spinnerHoraInicio.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+            LocalTime horaFin = ((Date) spinnerHoraFin.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+
+            int ocupantes;
+            try {
+                ocupantes = Integer.parseInt(ocupantesField.getText());
+                if (ocupantes <= 0) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(win, "Número de ocupantes inválido");
+                return;
+            }
+
+            // Validar que hora fin sea posterior a hora inicio
+            if (horaFin.isBefore(horaInicio) || horaFin.equals(horaInicio)) {
+                JOptionPane.showMessageDialog(win, "La hora de fin debe ser posterior a la hora de inicio");
+                return;
+            }
+
+            Equipo equipo = equipos.stream()
+                    .filter(eq -> eq.getNombre().equals(equipoSeleccionado))
+                    .findFirst()
+                    .orElse(null);
+
+            if (equipo != null && !equipo.isPrestado()) {
+                // Crear DetalleReserva con los nuevos campos
+                DetalleReserva detalleReserva = new DetalleReserva(fecha, horaInicio, horaFin,
+                        laboratorioSeleccionado, ocupantes);
+
+                // Crear CabeceraReserva
+                CabeceraReserva nuevaReserva = new CabeceraReserva(
+                        "UDLA",
+                        estudiante.getCarrera(),
+                        estudiante.getNombre(),
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                );
+                nuevaReserva.setDetalleReserva(detalleReserva);
+                nuevaReserva.setUsuario(estudiante);
+                nuevaReserva.setEquipo(equipo);
+
+                reservas.add(nuevaReserva);
+                equipo.setPrestado(true);
+
+                // Actualizar la tabla con la nueva reserva
+                actualizarTablaReservas(modeloReservas, estudiante);
+
+                JOptionPane.showMessageDialog(win, "Equipo prestado con éxito");
+
+                System.out.println(nuevaReserva);
+
+                // Limpiar campos después de la reserva
+                fechaChooser.setDate(null);
+                spinnerHoraInicio.setValue(new Date());
+                spinnerHoraFin.setValue(new Date());
+                ocupantesField.setText("");
+            } else {
+                JOptionPane.showMessageDialog(win, "El equipo seleccionado no está disponible");
+            }
+        });
+
+        // Botón de Eliminar Reserva
+        JButton eliminarReservaButton = new JButton("Devolver Equipo");
+
+        eliminarReservaButton.addActionListener(e -> {
+            int filaSeleccionada = tablaReservas.getSelectedRow();
+            if (filaSeleccionada != -1) {
+                int numeroReserva = (int) modeloReservas.getValueAt(filaSeleccionada, 0);
+                CabeceraReserva reservaAEliminar = reservas.stream()
+                        .filter(reserva -> reserva.getNumeroReserva() == numeroReserva)
+                        .findFirst()
+                        .orElse(null);
+
+                if (reservaAEliminar != null) {
+                    // Devolver el equipo a disponibilidad
+                    reservaAEliminar.getEquipo().setPrestado(false);
+                    // Eliminar la reserva de la lista
+                    reservas.remove(reservaAEliminar);
+                    // Actualizar la tabla
+                    actualizarTablaReservas(modeloReservas, estudiante);
+                    JOptionPane.showMessageDialog(win, "Equipo devuelto con éxito");
+                }
+            } else {
+                JOptionPane.showMessageDialog(win, "Selecciona el equipo que van a devolver eliminar");
+            }
+        });
+
+        // Agregar el botón de eliminar debajo de la tabla
+        JPanel eliminarReservaPanel = new JPanel();
+        eliminarReservaPanel.add(eliminarReservaButton);
+        panelEstudiante.add(eliminarReservaPanel, BorderLayout.SOUTH);
+
+        win.add(panelEstudiante);
+        win.revalidate();
+        win.repaint();
+    }
+
+
+
+    // Método para actualizar la tabla con las reservas de un estudiante específico
+    private static void actualizarTablaReservas(DefaultTableModel modeloReservas, Estudiante estudiante) {
+        modeloReservas.setRowCount(0); // Limpiar la tabla
+        reservas.stream()
+                .filter(r -> r.getUsuario().equals(estudiante))
+                .forEach(r -> modeloReservas.addRow(new Object[]{
+                        r.getNumeroReserva(),
+                        r.getEquipo().getNombre(),
+                        r.getFecha(),
+                        r.getDetalleReserva().getNumeroOcupantes()
+                }));
+    }
+
+
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Date;
+import com.toedter.calendar.JDateChooser;
+import javax.swing.SpinnerDateModel;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.List;
+
+public class MainGUI {
+    private static JTextField correoField;
+    private static JPasswordField claveField;
+    private static JButton loginButton;
+    private static List<Equipo> equipos = new ArrayList<>();
+    private static List<DetalleReserva> reservas = new ArrayList<>();
+    private static List<Estudiante> estudiantes = new ArrayList<>();
+    private static List<Administrador> administradores = new ArrayList<>();
+
+    public static void main(String[] args) {
+        // Configuración inicial
+        equipos.add(new Equipo("Osciloscopio", "Disponible", new Date()));
+        equipos.add(new Equipo("Fuente de voltaje", "Requiere mantenimiento", new Date()));
+        equipos.add(new Equipo("Generador de onda", "Requiere mantenimiento", new Date()));
+
+
+        // Crear usuarios de prueba
+        Estudiante estudiante1 = new Estudiante("1234567890", "Paul Rosero", "pmrosero@gmail.com", "Quito", "1234", "0987654321", "Electrónica", 3);
+        Administrador administrador1 = new Administrador("0987654321", "David Iza", "david.iza@udla.ec", "Ambato", "5678", "1234567890");
+
+        estudiantes.add(estudiante1);
+        administradores.add(administrador1);
+
+        // Configuración GUI
+        JFrame win = new JFrame();
+        win.setTitle("Gestión de Equipos");
+        win.setSize(800, 600);
+        win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        win.setVisible(true); // Asegurar que la ventana se muestre
+
+        // Mostrar panel de login
+        mostrarPanelLogin(win, estudiante1, administrador1);
+    }
+
+
+    private static void mostrarFormularioRegistro(JFrame win) {
+        win.getContentPane().removeAll();
+        JPanel registroPanel = new JPanel(new GridLayout(8, 2));
+
+        JTextField nombreField = new JTextField();
+        JTextField correoField = new JTextField();
+        JPasswordField claveField = new JPasswordField();
+        JTextField telefonoField = new JTextField();
+        JComboBox<String> tipoUsuarioBox = new JComboBox<>(new String[]{"Estudiante", "Administrador"});
+        JButton registrarButton = new JButton("Registrar");
+        JButton regresarButton = new JButton("Regresar");
+
+        registroPanel.add(new JLabel("Nombre:"));
+        registroPanel.add(nombreField);
+        registroPanel.add(new JLabel("Correo:"));
+        registroPanel.add(correoField);
+        registroPanel.add(new JLabel("Contraseña:"));
+        registroPanel.add(claveField);
+        registroPanel.add(new JLabel("Teléfono:"));
+        registroPanel.add(telefonoField);
+        registroPanel.add(new JLabel("Tipo de Usuario:"));
+        registroPanel.add(tipoUsuarioBox);
+        registroPanel.add(registrarButton);
+        registroPanel.add(regresarButton);
+
+        win.add(registroPanel);
+        win.revalidate();
+        win.repaint();
+
+        registrarButton.addActionListener(e -> {
+            String nombre = nombreField.getText();
+            String correo = correoField.getText();
+            String clave = new String(claveField.getPassword());
+            String telefono = telefonoField.getText();
+            String tipoUsuario = (String) tipoUsuarioBox.getSelectedItem();
+
+            if (correo.isEmpty() || clave.isEmpty() || nombre.isEmpty() || telefono.isEmpty()) {
+                JOptionPane.showMessageDialog(win, "Por favor, complete todos los campos.");
+                return;
+            }
+
+            if (tipoUsuario.equals("Estudiante")) {
+                Estudiante nuevoEstudiante = new Estudiante("1234567890", nombre, correo, "Ciudad", clave, telefono, "Carrera", 1);
+                estudiantes.add(nuevoEstudiante);
+                JOptionPane.showMessageDialog(win, "Estudiante registrado con éxito.");
+            } else {
+                Administrador nuevoAdministrador = new Administrador("0987654321", nombre, correo, "Ciudad", clave, telefono);
+                administradores.add(nuevoAdministrador);
+                JOptionPane.showMessageDialog(win, "Administrador registrado con éxito.");
+            }
+        });
+
+        regresarButton.addActionListener(e -> mostrarPanelLogin(win, null, null)); // Regresar al login
+    }
+
+    private static void mostrarPanelLogin(JFrame win, Estudiante dummyEstudiante, Administrador dummyAdministrador) {
+        win.getContentPane().removeAll();
+
+        JPanel loginPanel = new JPanel(new GridLayout(3, 2));
+        correoField = new JTextField();
+        claveField = new JPasswordField();
+        loginButton = new JButton("Iniciar Sesión");
+        JButton botonRegistro = new JButton("Registrar Usuario");
+
+        loginPanel.add(new JLabel("Correo:"));
+        loginPanel.add(correoField);
+        loginPanel.add(new JLabel("Contraseña:"));
+        loginPanel.add(claveField);
+        loginPanel.add(loginButton);
+        loginPanel.add(botonRegistro);
+
+        win.add(loginPanel);
+        win.revalidate();
+        win.repaint();
+
+        loginButton.addActionListener(e -> {
+            String correo = correoField.getText();
+            String clave = new String(claveField.getPassword());
+
+            // Validar credenciales en estudiantes
+            for (Estudiante estudiante : estudiantes) {
+                if (estudiante.getCorreo().equals(correo) && estudiante.getClave().equals(clave)) {
+                    mostrarPanelEstudiante(win, estudiante);
+                    return;
+                }
+            }
+
+            // Validar credenciales en administradores
+            for (Administrador administrador : administradores) {
+                if (administrador.getCorreo().equals(correo) && administrador.getClave().equals(clave)) {
+                    mostrarPanelAdministrador(win, administrador);
+                    return;
+                }
+            }
+
+            JOptionPane.showMessageDialog(win, "Credenciales inválidas.");
+        });
+
+        botonRegistro.addActionListener(e -> mostrarFormularioRegistro(win));
+    }
+    private static void mostrarPanelEstudiante(JFrame win, Estudiante estudiante) {
+        win.getContentPane().removeAll();
+        JPanel panelEstudiante = new JPanel(new BorderLayout());
+
+        // Crear el panel de pestañas
+        JTabbedPane tabbedPane = new JTabbedPane();
+
+        // === Panel de Reservas Actuales ===
+        DefaultTableModel modeloReservas = new DefaultTableModel(
+                new String[]{"Número", "Tipo", "Fecha", "Detalles", "Eliminar"}, 0
+        );
+        JTable tablaReservas = new JTable(modeloReservas);
+        JScrollPane scrollReservas = new JScrollPane(tablaReservas);
+        panelEstudiante.add(scrollReservas, BorderLayout.NORTH);
+
+        // === Panel de Reserva de Laboratorio ===
+        JPanel panelReservaLab = new JPanel(new GridLayout(0, 4, 10, 10));
+
+        // Componentes para laboratorio
+        JComboBox<String> laboratorioComboBox = new JComboBox<>(new String[]{"UPE | -320", "UPE | -321", "UPE | -319"});
+        JDateChooser fechaLabChooser = new JDateChooser();
+        fechaLabChooser.setDateFormatString("dd/MM/yyyy");
+        fechaLabChooser.setMinSelectableDate(new Date());
+
+        SpinnerDateModel modeloHoraInicio = new SpinnerDateModel();
+        SpinnerDateModel modeloHoraFin = new SpinnerDateModel();
+        JSpinner spinnerHoraInicio = new JSpinner(modeloHoraInicio);
+        JSpinner spinnerHoraFin = new JSpinner(modeloHoraFin);
+
+        JSpinner.DateEditor editorInicio = new JSpinner.DateEditor(spinnerHoraInicio, "HH:mm");
+        JSpinner.DateEditor editorFin = new JSpinner.DateEditor(spinnerHoraFin, "HH:mm");
+        spinnerHoraInicio.setEditor(editorInicio);
+        spinnerHoraFin.setEditor(editorFin);
+
+        JTextField ocupantesField = new JTextField();
+
+        panelReservaLab.add(new JLabel("Laboratorio:"));
+        panelReservaLab.add(laboratorioComboBox);
+        panelReservaLab.add(new JLabel("Fecha:"));
+        panelReservaLab.add(fechaLabChooser);
+        panelReservaLab.add(new JLabel("Hora inicio:"));
+        panelReservaLab.add(spinnerHoraInicio);
+        panelReservaLab.add(new JLabel("Hora fin:"));
+        panelReservaLab.add(spinnerHoraFin);
+        panelReservaLab.add(new JLabel("Número de Ocupantes:"));
+        panelReservaLab.add(ocupantesField);
+
+        JButton reservarLabButton = new JButton("Reservar Laboratorio");
+        panelReservaLab.add(new JLabel(""));
+        panelReservaLab.add(reservarLabButton);
+
+        // === Panel de Reserva de Equipo ===
+        JPanel panelReservaEquipo = new JPanel(new GridLayout(0, 4, 10, 10));
+
+        JComboBox<String> equipoComboBox = new JComboBox<>(equipos.stream()
+                .filter(equipo -> !equipo.isPrestado())
+                .map(Equipo::getNombre)
+                .toArray(String[]::new));
+
+        JDateChooser fechaEquipoChooser = new JDateChooser();
+        fechaEquipoChooser.setDateFormatString("dd/MM/yyyy");
+        fechaEquipoChooser.setMinSelectableDate(new Date());
+
+        JSpinner duracionSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 3, 1));
+
+        panelReservaEquipo.add(new JLabel("Equipo:"));
+        panelReservaEquipo.add(equipoComboBox);
+        panelReservaEquipo.add(new JLabel("Fecha:"));
+        panelReservaEquipo.add(fechaEquipoChooser);
+        panelReservaEquipo.add(new JLabel("Duración (días):"));
+        panelReservaEquipo.add(duracionSpinner);
+
+        JButton reservarEquipoButton = new JButton("Reservar Equipo");
+        panelReservaEquipo.add(new JLabel(""));
+        panelReservaEquipo.add(reservarEquipoButton);
+
+        // Agregar paneles a las pestañas
+        tabbedPane.addTab("Reserva de Laboratorio", panelReservaLab);
+        tabbedPane.addTab("Reserva de Equipo", panelReservaEquipo);
+
+        panelEstudiante.add(tabbedPane, BorderLayout.CENTER);
+
+        // === Acción del botón de reserva de laboratorio ===
+        reservarLabButton.addActionListener(e -> {
+            if (fechaLabChooser.getDate() == null) {
+                JOptionPane.showMessageDialog(win, "Seleccione una fecha válida");
+                return;
+            }
+
+            LocalDate fecha = fechaLabChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalTime horaInicio = ((Date) spinnerHoraInicio.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+            LocalTime horaFin = ((Date) spinnerHoraFin.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+            String laboratorioSeleccionado = (String) laboratorioComboBox.getSelectedItem();
+
+            int ocupantes;
+            try {
+                ocupantes = Integer.parseInt(ocupantesField.getText());
+                if (ocupantes <= 0) throw new NumberFormatException();
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(win, "Número de ocupantes inválido");
+                return;
+            }
+
+            if (horaFin.isBefore(horaInicio) || horaFin.equals(horaInicio)) {
+                JOptionPane.showMessageDialog(win, "La hora de fin debe ser posterior a la hora de inicio");
+                return;
+            }
+
+            DetalleReservaLaboratorio nuevaReserva = new DetalleReservaLaboratorio(
+                    fecha, estudiante, horaInicio, horaFin, laboratorioSeleccionado, ocupantes
+            );
+
+            reservas.add(nuevaReserva);
+            actualizarTablaReservas(modeloReservas, estudiante);
+            JOptionPane.showMessageDialog(win, "Laboratorio reservado con éxito");
+
+            // Limpiar campos
+            fechaLabChooser.setDate(null);
+            spinnerHoraInicio.setValue(new Date());
+            spinnerHoraFin.setValue(new Date());
+            ocupantesField.setText("");
+        });
+
+        // === Acción del botón de reserva de equipo ===
+        reservarEquipoButton.addActionListener(e -> {
+            if (fechaEquipoChooser.getDate() == null) {
+                JOptionPane.showMessageDialog(win, "Seleccione una fecha válida");
+                return;
+            }
+
+            String equipoSeleccionado = (String) equipoComboBox.getSelectedItem();
+            int duracion = (int) duracionSpinner.getValue();
+            LocalDate fecha = fechaEquipoChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+            Equipo equipo = equipos.stream()
+                    .filter(eq -> eq.getNombre().equals(equipoSeleccionado))
+                    .findFirst()
+                    .orElse(null);
+
+            if (equipo != null && !equipo.isPrestado()) {
+                DetalleReservaEquipo nuevaReserva = new DetalleReservaEquipo(
+                        fecha, estudiante, equipo, duracion
+                );
+
+                reservas.add(nuevaReserva);
+                equipo.setPrestado(true);
+                actualizarTablaReservas(modeloReservas, estudiante);
+                JOptionPane.showMessageDialog(win, "Equipo prestado con éxito");
+
+                // Limpiar campos
+                fechaEquipoChooser.setDate(null);
+                duracionSpinner.setValue(1);
+
+                // Actualizar lista de equipos disponibles
+                equipoComboBox.setModel(new DefaultComboBoxModel<>(equipos.stream()
+                        .filter(eq -> !eq.isPrestado())
+                        .map(Equipo::getNombre)
+                        .toArray(String[]::new)));
+            } else {
+                JOptionPane.showMessageDialog(win, "El equipo seleccionado no está disponible");
+            }
+        });
+
+        // === Botón de eliminar reserva ===
+        JButton eliminarReservaButton = new JButton("Eliminar Reserva");
+        eliminarReservaButton.addActionListener(e -> {
+            int filaSeleccionada = tablaReservas.getSelectedRow();
+            if (filaSeleccionada != -1) {
+                int numeroReserva = (int) modeloReservas.getValueAt(filaSeleccionada, 0);
+                DetalleReserva reservaAEliminar = reservas.stream()
+                        .filter(reserva -> reserva.getNumeroReserva() == numeroReserva)
+                        .findFirst()
+                        .orElse(null);
+
+                if (reservaAEliminar != null) {
+                    if (reservaAEliminar instanceof DetalleReservaEquipo) {
+                        DetalleReservaEquipo reservaEquipo = (DetalleReservaEquipo) reservaAEliminar;
+                        reservaEquipo.getEquipo().setPrestado(false);
+                    }
+                    reservas.remove(reservaAEliminar);
+                    actualizarTablaReservas(modeloReservas, estudiante);
+                    JOptionPane.showMessageDialog(win, "Reserva eliminada con éxito");
+                }
+            } else {
+                JOptionPane.showMessageDialog(win, "Seleccione una reserva para eliminar");
+            }
+        });
+
+        JPanel eliminarReservaPanel = new JPanel();
+        eliminarReservaPanel.add(eliminarReservaButton);
+        panelEstudiante.add(eliminarReservaPanel, BorderLayout.SOUTH);
+
+        win.add(panelEstudiante);
+        win.revalidate();
+        win.repaint();
+    }
+
+    // Método auxiliar para actualizar la tabla de reservas
+    private static void actualizarTablaReservas(DefaultTableModel modelo, Estudiante estudiante) {
+        modelo.setRowCount(0);
+        for (DetalleReserva reserva : reservas) {
+            if (reserva.getUsuario().equals(estudiante)) {
+                String detalles;
+                String tipo;
+
+                if (reserva instanceof DetalleReservaLaboratorio) {
+                    DetalleReservaLaboratorio reservaLab = (DetalleReservaLaboratorio) reserva;
+                    tipo = "Laboratorio";
+                    detalles = String.format("%s, %s-%s, %d ocupantes",
+                            reservaLab.getLaboratorioReservado(),
+                            reservaLab.getHoraInicio().toString(),
+                            reservaLab.getHoraFin().toString(),
+                            reservaLab.getNumeroOcupantes());
+                } else {
+                    DetalleReservaEquipo reservaEquipo = (DetalleReservaEquipo) reserva;
+                    tipo = "Equipo";
+                    detalles = String.format("%s, %d días",
+                            reservaEquipo.getEquipo().getNombre(),
+                            reservaEquipo.getDuracion());
+                }
+
+                modelo.addRow(new Object[]{
+                        reserva.getNumeroReserva(),
+                        tipo,
+                        reserva.getFecha(),
+                        detalles
+                });
+            }
+        }
+    }
+
+    private static void mostrarVentanaPrincipal(JFrame win, JTextField correoField, JPasswordField claveField, JButton loginButton) {
+        win.getContentPane().removeAll();
+        JPanel loginPanel = new JPanel(new GridLayout(3, 2));
+
+        loginPanel.add(new JLabel("Correo:"));
+        loginPanel.add(correoField);
+        loginPanel.add(new JLabel("Contraseña:"));
+        loginPanel.add(claveField);
+        loginPanel.add(new JLabel(""));
+        loginPanel.add(loginButton);
+
+        win.add(loginPanel);
+        win.revalidate();
+        win.repaint();
+    }
+
+
+    private static void mostrarPanelAdministrador(JFrame win, Administrador administrador) {
+        // Limpia el contenido del JFrame
+
+        win.getContentPane().removeAll();
+        JPanel panelAdministrador = new JPanel(new BorderLayout());
+
+        // Panel de Equipos que Requieren Mantenimiento
+        JTable tablaEquipos = new JTable(new DefaultTableModel(
+                new String[]{"Equipo", "Requiere Mantenimiento Correctivo", "Requiere Mantenimiento Preventivo"}, 0
+        ));
+        DefaultTableModel model = (DefaultTableModel) tablaEquipos.getModel();
+        equipos.forEach(equipo -> model.addRow(new Object[]{equipo.getNombre(), equipo.requiereMantenimientoCorrectivo(), equipo.requiereMantenimientoPreventivo()}));
+        JScrollPane scrollEquipos = new JScrollPane(tablaEquipos);
+        panelAdministrador.add(scrollEquipos, BorderLayout.NORTH);
+
+        // Panel de Mantenimiento
+        JPanel mantenimientoPanel = new JPanel(new GridLayout(3, 2));
+        JComboBox<String> equipoMantenimientoComboBox = new JComboBox<>(
+                equipos.stream()
+                        .filter(equipo -> equipo.requiereMantenimientoCorrectivo() || equipo.requiereMantenimientoPreventivo())
+                        .map(Equipo::getNombre)
+                        .toArray(String[]::new)
+        );
+
+        JButton btnPreventivo = new JButton("Mantenimiento Preventivo");
+        JButton btnCorrectivo = new JButton("Mantenimiento Correctivo");
+
+        mantenimientoPanel.add(new JLabel("Equipo para Mantenimiento:"));
+        mantenimientoPanel.add(equipoMantenimientoComboBox);
+        mantenimientoPanel.add(btnPreventivo);
+        mantenimientoPanel.add(btnCorrectivo);
+
+        panelAdministrador.add(mantenimientoPanel, BorderLayout.CENTER);
+
+        // Acción para Mantenimiento Preventivo
+        btnPreventivo.addActionListener(e -> realizarMantenimiento(win, administrador, equipoMantenimientoComboBox, "Preventivo", tablaEquipos));
+
+        // Acción para Mantenimiento Correctivo
+        btnCorrectivo.addActionListener(e -> realizarMantenimiento(win, administrador, equipoMantenimientoComboBox, "Correctivo", tablaEquipos));
+
+        // Botón para regresar al inicio de sesión
+        JButton botonSalir = new JButton("Salir");
+        botonSalir.addActionListener(e -> {
+            mostrarPanelLogin(win, null, null); // Regresar al login
+        });
+
+        // Panel inferior con el botón de salida
+        JPanel panelBotonSalir = new JPanel();
+        panelBotonSalir.add(botonSalir);
+
+        panelAdministrador.add(panelBotonSalir, BorderLayout.SOUTH);
+
+        win.add(panelAdministrador);
+        win.revalidate();
+        win.repaint();
+    }
+
+
+
+    // Método auxiliar para realizar el mantenimiento
+    private static void realizarMantenimiento(JFrame win, Administrador administrador, JComboBox<String> equipoComboBox, String tipoMantenimiento, JTable tablaEquipos) {
+        String equipoSeleccionado = (String) equipoComboBox.getSelectedItem();
+        if (equipoSeleccionado == null) {
+            JOptionPane.showMessageDialog(win, "No hay equipos seleccionados para el mantenimiento.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Crear un cuadro de diálogo personalizado con JDateChooser
+        JDateChooser dateChooser = new JDateChooser();
+        dateChooser.setDateFormatString("dd/MM/yyyy");
+
+        int resultado = JOptionPane.showConfirmDialog(
+                win,
+                dateChooser,
+                "Seleccione la fecha del mantenimiento",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (resultado != JOptionPane.OK_OPTION || dateChooser.getDate() == null) {
+            JOptionPane.showMessageDialog(win, "Fecha de mantenimiento no seleccionada.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Convertir la fecha seleccionada a String
+        Date fechaSeleccionada = dateChooser.getDate();
+        LocalDate fechaMantenimiento = fechaSeleccionada.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        Equipo equipo = equipos.stream()
+                .filter(eq -> eq.getNombre().equals(equipoSeleccionado))
+                .findFirst()
+                .orElse(null);
+
+        if (equipo != null) {
+            try {
+                administrador.realizarMantenimiento(equipo, tipoMantenimiento, fechaMantenimiento.toString());
+                JOptionPane.showMessageDialog(win, "Mantenimiento " + tipoMantenimiento + " realizado con éxito para " + equipoSeleccionado);
+
+                // Actualizar tabla y combo box
+                DefaultTableModel model = (DefaultTableModel) tablaEquipos.getModel();
+                model.setRowCount(0); // Limpiar la tabla
+                equipos.forEach(eq -> model.addRow(new Object[]{eq.getNombre(), eq.requiereMantenimientoCorrectivo(), eq.requiereMantenimientoPreventivo()}));
+
+                //equipoComboBox.removeAllItems();
+                equipos.stream()
+                        .filter(eq -> eq.requiereMantenimientoCorrectivo() || eq.requiereMantenimientoPreventivo())
+                        .map(Equipo::getNombre)
+                        .forEach(equipoComboBox::addItem);
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(win, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(win, "Equipo no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+    // Método para mostrar el panel principal (login panel)
+    private static void mostrarPanelPrincipal(JFrame win, JTextField correoField, JPasswordField claveField, JButton loginButton) {
+        win.getContentPane().removeAll(); // Limpiar el contenido del JFrame
+
+        JPanel loginPanel = new JPanel(new GridLayout(3, 2));
+        loginPanel.add(new JLabel("Correo:"));
+        loginPanel.add(correoField);
+        loginPanel.add(new JLabel("Contraseña:"));
+        loginPanel.add(claveField);
+        loginPanel.add(loginButton);
+
+        // Restablecer los campos de texto
+        correoField.setText("");
+        claveField.setText("");
+
+        win.add(loginPanel); // Agregar el panel principal al JFrame
+        win.revalidate();
+        win.repaint();
+    }
+}
